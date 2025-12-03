@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jigglypuff Magic</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ffd6f6, #ffeaff, #ffccf9);
+    font-family: "Comic Sans MS", "Poppins", sans-serif;
+    text-align: center;
+    overflow: hidden;
+}
+
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.jiggly-button {
+    font-size: 28px;
+    padding: 20px 40px;
+    background: #ff99dd;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255, 0, 200, 0.5);
+    transition: transform 0.2s, background 0.3s;
+}
+.jiggly-button:hover {
+    background: #ff77cc;
+    transform: scale(1.1);
+}
+.jiggly-button:active {
+    transform: scale(0.95);
+}
+
+
+.jiggly-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sprite {
+    width: 500px;
+    image-rendering: pixelated;
+    transition: transform 0.1s;
+}
+
+
+#bubble-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 10;
+}
+.bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0;
+}
+
+/* BUBBLE ANIMATIONS */
+@keyframes Right {
+    0% { transform: translateX(0); opacity: 0; }
+    15% { opacity: 0.9; }
+    100% { transform: translateX(120vw); opacity: 0; }
+}
+@keyframes Left {
+    0% { transform: translateX(0); opacity: 0; }
+    15% { opacity: 0.9; }
+    100% { transform: translateX(-120vw); opacity: 0; }
+}
+</style>
+
+</head>
+
+<body>
+
+<audio id="bgm" src="wannadance.mp3" loop></audio>
+
+<div id="introScreen" class="container">
+    <button id="startBtn" class="jiggly-button">🎤 Magic</button>
+</div>
+
+<!-- JIGGLYPUFF SCREEN -->
+<div id="puffScreen" style="display:none;">
+    <div id="bubble-container"></div>
+
+    <div class="jiggly-wrapper">
+        <img id="jiggly" class="sprite"
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png">
+    </div>
+</div>
+
+
+<script>
+
+const frame1 = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png";
+const frame2 = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/39.png";
+let toggle = true;
+
+function startDance() {
+    setInterval(() => {
+        jiggly.src = toggle ? frame2 : frame1;
+        toggle = !toggle;
+        jiggly.style.transform = toggle ? "translateY(-5px)" : "translateY(0px)";
+    }, 300);
+}
+
+function bubbles() {
+    const container = document.getElementById("bubble-container");
+    const bubble = document.createElement("div");
+    bubble.classList.add("bubble");
+
+    const size = Math.random() * 30 + 20;
+    bubble.style.width = size + "px";
+    bubble.style.height = size + "px";
+    bubble.style.top = Math.random() * 90 + "vh";
+
+    const speed = Math.random() * 3 + 4;
+    bubble.style.animationDuration = speed + "s";
+
+    const fromLeft = Math.random() < 0.5;
+    bubble.style[fromLeft ? "left" : "right"] = "-15vw";
+    bubble.style.animationName = fromLeft ? "Right" : "Left";
+
+    container.appendChild(bubble);
+    setTimeout(() => bubble.remove(), speed * 1000 + 500);
+}
+
+
+document.getElementById("startBtn").addEventListener("click", async () => {
+    const audio = document.getElementById("bgm");
+
+    // SAFARI (IPHONE) REQUIREMENT
+    try { await audio.play(); } catch(e) {}
+
+    document.getElementById("introScreen").style.display = "none";
+    document.getElementById("puffScreen").style.display = "block";
+    startDance();
+    setInterval(bubbles, Math.random() * 350 + 250);
+});
+</script>
+
+</body>
+</html>
